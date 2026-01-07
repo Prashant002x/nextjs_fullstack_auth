@@ -3,10 +3,11 @@
 import axios from "axios";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react"; // Added Suspense import
 import toast from "react-hot-toast";
 
-export default function ResetPasswordPage() {
+// 1. I renamed your main logic function to "ResetPasswordContent"
+function ResetPasswordContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -139,5 +140,14 @@ export default function ResetPasswordPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// 2. This is the new Wrapper Component that fixes the build error
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+            <ResetPasswordContent />
+        </Suspense>
     );
 }
