@@ -11,7 +11,7 @@ interface SendEmailParams {
 export const sendEmail = async ({ email, emailType, userId }: SendEmailParams) => {
     try {
         // 1. Generate a secure token
-        const token = crypto.randomBytes(20).toString("hex");
+        const token = crypto.randomBytes(32).toString("hex");
         
         // Before Saving this token in DB, hash it first
         const hashedToken = crypto
@@ -48,7 +48,7 @@ export const sendEmail = async ({ email, emailType, userId }: SendEmailParams) =
         const isVerify = emailType === "VERIFY_EMAIL";
         const subject = isVerify ? "Verify your email" : "Reset your password";
         const actionPath = isVerify ? "verify-email" : "reset-password";
-        const actionUrl = `${process.env.FRONTEND_URL}/${actionPath}?token=${hashedToken}`;
+        const actionUrl = `${process.env.FRONTEND_URL}/${actionPath}?token=${token}`;
         console.log(actionUrl);
         // 5. Build the Email HTML with Copy-Paste Support
         const mailOptions = {

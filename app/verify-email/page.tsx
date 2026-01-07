@@ -5,13 +5,11 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// 1. Rename your main logic component to "VerifyEmailContent"
 function VerifyEmailContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     
     const [token, setToken] = useState("");
-    const [showToken, setShowToken] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [verified, setVerified] = useState(false);
@@ -32,8 +30,9 @@ function VerifyEmailContent() {
                 setTimeout(() => router.push('/login'), 2000);
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "An error occurred during verification");
-            setError(err.response?.data?.message || "An error occurred during verification");
+            const errorMsg = err.response?.data?.message || "An error occurred during verification";
+            toast.error(errorMsg);
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -44,67 +43,90 @@ function VerifyEmailContent() {
         const tokenFromParams = searchParams.get('token');
         if (tokenFromParams) {
             setToken(tokenFromParams);
-        } else {
-            setError("No token found in URL");
         }
     }, [searchParams]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-            <h1 className="text-2xl font-bold mb-6">Email Verification</h1>
-            
-            <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                {/* Token Display Section */}
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 px-4">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
+                
+                {/* Header Section */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-blue-600 rounded-full mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-3xl font-bold text-slate-900">Verify Email</h1>
+                    <p className="text-slate-500 mt-2">
+                        Check your email for the verification link.
+                    </p>
+                </div>
+
+                {/* Token Display (Improved Visibility) */}
                 <div className="mb-6">
-                    <button 
-                        onClick={() => setShowToken(!showToken)}
-                        className="text-sm text-blue-600 underline mb-2 block"
-                    >
-                        {showToken ? "Hide Token" : "Show Token"}
-                    </button>
-                    
-                    {showToken && (
-                        <div className="p-2 bg-gray-100 rounded break-all text-xs font-mono border">
-                            {token || "No token detected"}
-                        </div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Verification Token
+                    </label>
+                    <input 
+                        type="text" 
+                        value={token || ""} 
+                        readOnly
+                        placeholder="No token detected..."
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {!token && (
+                        <p className="text-xs text-amber-500 mt-2">
+                            ⚠️ No token found in the URL.
+                        </p>
                     )}
                 </div>
 
                 {/* Status Messages */}
-                {loading && <p className="text-blue-500 mb-4 text-center">Verifying your email, please wait...</p>}
-                
                 {verified && (
-                    <p className="text-green-600 mb-4 text-center font-medium">
-                        ✅ Email verified successfully! Redirecting...
-                    </p>
-                )}
-
-                {error && (
-                    <div className="text-red-500 bg-red-50 p-3 rounded border border-red-200 mb-4 text-sm">
-                        {error}
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-center">
+                        <p className="text-green-700 font-semibold text-lg flex items-center justify-center gap-2">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                            Verified Successfully!
+                        </p>
+                        <p className="text-green-600 text-sm mt-1">Redirecting to login...</p>
                     </div>
                 )}
 
-                {/* Verification Action Button */}
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                        <p className="text-red-700 font-semibold">Verification Failed</p>
+                        <p className="text-red-600 text-sm mt-1">{error}</p>
+                    </div>
+                )}
+
+                {/* Action Button */}
                 <button
                     onClick={() => verifyToken(token)}
                     disabled={loading || !token || verified}
-                    className={`w-full py-2 px-4 rounded font-semibold transition-colors
+                    className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all transform active:scale-[0.98]
                         ${loading || !token || verified 
-                            ? 'bg-gray-300 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                            ? "bg-slate-300 cursor-not-allowed shadow-none" 
+                            : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-200"}`}
                 >
-                    {loading ? "Processing..." : "Verify Token"}
+                    {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Verifying...
+                        </span>
+                    ) : "Verify Email"}
                 </button>
             </div>
         </div>
     );
 }
 
-// 2. Create the default export that wraps the content in Suspense
 export default function VerifyEmailPage() {
     return (
-        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading verification...</div>}>
+        <Suspense fallback={<div className="flex h-screen items-center justify-center bg-slate-50 text-slate-600">Loading verification...</div>}>
             <VerifyEmailContent />
         </Suspense>
     );

@@ -9,9 +9,7 @@ export async function POST(request:NextRequest){
     try{
         const reqBody = await request.json();
         const {token} = reqBody;
-        console.log("Token received for verification:", token);
-        const hashedToken=crypto.createHash('sha-256').update(token).digest('hex');
-
+        const hashedToken=crypto.createHash('sha256').update(token).digest('hex');
         const user =await User.findOne({verifyToken:hashedToken, verifyTokenExpiry:{$gt:Date.now()}})
         if(!user){
             return NextResponse.json({message:"Invalid or expired token"}, {status:400});
