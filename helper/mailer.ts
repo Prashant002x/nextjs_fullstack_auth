@@ -49,7 +49,7 @@ export const sendEmail = async ({ email, emailType, userId }: SendEmailParams) =
         const subject = isVerify ? "Verify your email" : "Reset your password";
         const actionPath = isVerify ? "verify-email" : "reset-password";
         const actionUrl = `${process.env.FRONTEND_URL}/${actionPath}?token=${hashedToken}`;
-
+        console.log(actionUrl);
         // 5. Build the Email HTML with Copy-Paste Support
         const mailOptions = {
             from: '"NextAuth Support" <support@yourapp.com>',

@@ -42,7 +42,6 @@ function ResetPasswordContent() {
         try {
             setLoading(true);
             const response = await axios.post('/api/users/reset-password', { token, password });
-            console.log(response);
             toast.success("Password reset successful!");
             router.push('/login');
         } catch (error: any) {

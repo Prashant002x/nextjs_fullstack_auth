@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 // 1. Rename your main logic component to "VerifyEmailContent"
 function VerifyEmailContent() {
@@ -27,9 +28,11 @@ function VerifyEmailContent() {
             
             if (response.data.success) {
                 setVerified(true);
+                toast.success(response.data.message);
                 setTimeout(() => router.push('/login'), 2000);
             }
         } catch (err: any) {
+            toast.error(err.response?.data?.message || "An error occurred during verification");
             setError(err.response?.data?.message || "An error occurred during verification");
         } finally {
             setLoading(false);

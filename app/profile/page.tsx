@@ -15,14 +15,12 @@ export default function ProfilePage() {
     const getUserDetails = async () => {
         try {
             const response = await axios.get('/api/users/me');
-            console.log("User data:", response.data);
             // Typescript will infer data as any from axios unless typed, 
             // but we expect a string ID here.
             setData(response.data.data._id); 
         } catch (error: any) {
             // In TS, error is 'unknown' by default. We cast to 'any' 
             // to access .message safely without complex type guards.
-            console.log(error.message);
             toast.error("Failed to get user details");
         }
     }
@@ -34,7 +32,6 @@ export default function ProfilePage() {
             toast.success(response.data.message);
             router.push('/login');
         } catch (error: any) {
-            console.log("Logout failed", error.message);
             toast.error("Logout failed");
         } finally {
             setLoading(false);
