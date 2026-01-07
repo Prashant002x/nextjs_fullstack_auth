@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 
-export default function VerifyEmailPage() {
+// 1. Rename your main logic component to "VerifyEmailContent"
+function VerifyEmailContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     
@@ -94,5 +95,14 @@ export default function VerifyEmailPage() {
                 </button>
             </div>
         </div>
+    );
+}
+
+// 2. Create the default export that wraps the content in Suspense
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading verification...</div>}>
+            <VerifyEmailContent />
+        </Suspense>
     );
 }
